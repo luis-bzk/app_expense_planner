@@ -1,11 +1,54 @@
-import React from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
 
-export function BudgetControl(): React.JSX.Element {
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {formatBudgetCurrency} from '../../config/helpers';
+import {Expense} from '../../domain/entities';
+
+interface Props {
+  budget: number;
+  expenses: Expense[];
+}
+
+export function BudgetControl({budget, expenses}: Props): React.JSX.Element {
+  const [available, setAvailable] = useState<number>(0);
+  const [spent, setSpent] = useState<number>(0);
+
+  useEffect(() => {
+    const totalSpent = expenses.reduce(
+      (total, item) => total + item.quantity,
+      0,
+    );
+    const totalAvailable = budget - totalSpent;
+
+    setSpent(totalSpent);
+    setAvailable(totalAvailable);
+  }, [budget, expenses]);
+
   return (
     <View style={styles.container}>
       <View style={styles.graphic}>
         <Image style={styles.img} source={require('../img/grafico.jpg')} />
+      </View>
+
+      <View style={styles.details_container}>
+        <Text style={styles.detail}>
+          Presupuesto:{' '}
+          <Text style={styles.detail_value}>
+            {formatBudgetCurrency(budget)}
+          </Text>
+        </Text>
+
+        <Text style={styles.detail}>
+          Disponible:{' '}
+          <Text style={styles.detail_value}>
+            {formatBudgetCurrency(available)}
+          </Text>
+        </Text>
+
+        <Text style={styles.detail}>
+          Gastado:{' '}
+          <Text style={styles.detail_value}>{formatBudgetCurrency(spent)}</Text>
+        </Text>
       </View>
     </View>
   );
@@ -33,5 +76,19 @@ const styles = StyleSheet.create({
   img: {
     width: 200,
     height: 200,
+  },
+  details_container: {
+    backgroundColor: '#f8fafc',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    alignItems: 'center',
+    gap: 5,
+  },
+  detail: {
+    fontSize: 18,
+  },
+  detail_value: {
+    color: '#2563eb',
   },
 });

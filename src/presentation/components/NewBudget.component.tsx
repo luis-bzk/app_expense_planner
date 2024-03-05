@@ -3,30 +3,29 @@ import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 import {InputCustom} from './Input.component';
 
 interface Props {
-  handleNewBudget: (val: number) => void;
+  handleNewBudget: (value: number) => void;
 }
 
-export function NewExpense({handleNewBudget}: Props): React.JSX.Element {
-  const [budget, setBudget] = useState<number>();
-
-  const setExpenseValue = (val: string) => {
-    setBudget(parseFloat(val));
-  };
+export function NewBudget({handleNewBudget}: Props): React.JSX.Element {
+  const [tempBudget, setTempBudget] = useState<string>('');
 
   const validateNewBudget = () => {
-    if (!budget) {
+    if (!tempBudget) {
       return Alert.alert('Error', 'El valor del presupuesto es requerido');
     }
+    if (isNaN(parseFloat(tempBudget))) {
+      return Alert.alert('Error', 'El valor del presupuesto no es valido');
+    }
 
-    if (budget < 0) {
+    if (parseFloat(tempBudget) < 0) {
       return Alert.alert(
         'Error',
         'El valor del presupuesto no puede ser menor a 0',
       );
     }
 
-    if (budget.toString().indexOf('.') !== -1) {
-      let decimalNum = budget.toString().split('.')[1];
+    if (tempBudget.indexOf('.') !== -1) {
+      let decimalNum = tempBudget.split('.')[1];
 
       if (decimalNum.length > 2) {
         return Alert.alert(
@@ -36,7 +35,7 @@ export function NewExpense({handleNewBudget}: Props): React.JSX.Element {
       }
     }
 
-    handleNewBudget(budget);
+    handleNewBudget(parseFloat(tempBudget));
   };
 
   return (
@@ -45,8 +44,8 @@ export function NewExpense({handleNewBudget}: Props): React.JSX.Element {
         label={'Definir presupuesto'}
         inputPlaceholder={'Ej. 12.50'}
         keyboardType={'numeric'}
-        value={budget?.toString()}
-        setValue={setExpenseValue}
+        value={tempBudget}
+        setValue={setTempBudget}
       />
 
       <Pressable style={styles.button} onPress={validateNewBudget}>

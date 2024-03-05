@@ -54,7 +54,6 @@ export function InputCustom({
 
 const styles = StyleSheet.create({
   label: {
-    color: '#000000',
     fontSize: 18,
     marginBottom: 10,
   },

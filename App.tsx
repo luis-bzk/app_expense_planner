@@ -1,12 +1,20 @@
 import React, {useState} from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
-import {Header, NewExpense, BudgetControl} from './src/presentation/components';
+import {Image, Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  Header,
+  NewBudget,
+  BudgetControl,
+  ExpenseForm,
+} from './src/presentation/components';
+import {Expense} from './src/domain/entities';
 
 function App(): React.JSX.Element {
-  const [validBudget, setValidBudget] = useState<boolean>(false);
+  const [budget, setBudget] = useState<number>();
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [expenseForm, setExpenseForm] = useState<boolean>(false);
 
-  const handleNewBudget = (val: number) => {
-    setValidBudget(true);
+  const handleNewBudget = (value: number) => {
+    setBudget(value);
   };
 
   return (
@@ -14,12 +22,30 @@ function App(): React.JSX.Element {
       <View style={styles.header}>
         <Header />
 
-        {validBudget ? (
-          <BudgetControl />
+        {budget && budget > 0 ? (
+          <BudgetControl budget={budget} expenses={expenses} />
         ) : (
-          <NewExpense handleNewBudget={handleNewBudget} />
+          <NewBudget handleNewBudget={handleNewBudget} />
         )}
       </View>
+
+      {budget && budget > 0 && (
+        <Pressable
+          style={styles.new_budget_button}
+          onPress={() => setExpenseForm(state => !state)}>
+          <Image
+            style={styles.image}
+            source={require('./src/presentation/img/nuevo-gasto.png')}
+          />
+        </Pressable>
+      )}
+
+      {expenseForm && (
+        <ExpenseForm
+          showModal={expenseForm}
+          closeModal={() => setExpenseForm(state => !state)}
+        />
+      )}
 
       <View style={styles.body}></View>
     </SafeAreaView>
@@ -32,6 +58,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#3b82f6',
     paddingHorizontal: 14,
     // paddingVertical: 10,
+  },
+  new_budget_button: {
+    width: 50,
+    height: 50,
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+  },
+  image: {
+    width: 50,
+    height: 50,
   },
   body: {paddingHorizontal: 14, paddingTop: 30, paddingBottom: 10},
 });
