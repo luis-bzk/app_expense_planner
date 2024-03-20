@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  Alert,
   Modal,
   Pressable,
   SafeAreaView,
@@ -15,9 +16,14 @@ import {CATEGORIES} from '../../data';
 interface Props {
   showModal: boolean;
   closeModal: () => void;
+  handleNewExpense: (expense: Expense) => void;
 }
 
-export function ExpenseForm({showModal, closeModal}: Props): React.JSX.Element {
+export function ExpenseForm({
+  showModal,
+  closeModal,
+  handleNewExpense,
+}: Props): React.JSX.Element {
   const [expense, setExpense] = useState<Expense>({
     id: '',
     name: '',
@@ -25,12 +31,78 @@ export function ExpenseForm({showModal, closeModal}: Props): React.JSX.Element {
     quantity: 0,
   });
 
-  const setValueExpense = (field: keyof Expense, value: string | number) => {
+  const setValueExpense = (field: keyof Expense, value: string) => {
     setExpense(prevState => ({
       ...prevState,
       [field]: value,
     }));
   };
+
+  const addNewExpense = () => {
+    console.log({
+      message: 'Tipo de dato de la cantidad',
+      value: expense.quantity,
+      type: typeof expense.quantity,
+    });
+    if (!expense.name) {
+      return Alert.alert('Error', 'El nombre del gasto es requerido', [
+        {text: 'OK'},
+      ]);
+    }
+    if (!expense.category) {
+      return Alert.alert('Error', 'La categoría es requerida', [{text: 'OK'}]);
+    }
+
+    if (!expense.quantity) {
+      return Alert.alert('Error', 'La cantidad del gasto es requerido', [
+        {text: 'OK'},
+      ]);
+    }
+
+    if (isNaN(parseFloat(expense.quantity.toString()))) {
+      return Alert.alert('Error', 'La cantidad del gasto no es valido', [
+        {text: 'OK'},
+      ]);
+    }
+
+    if (expense.quantity.toString().indexOf('.') !== -1) {
+      let decimalNum = expense.quantity.toString().split('.')[1];
+
+      if (decimalNum.length > 2) {
+        return Alert.alert(
+          'Error',
+          'El valor del gasto no puede tener mas de dos decimales',
+        );
+      }
+    }
+
+    if (parseFloat(expense.quantity.toString()) <= 0) {
+      return Alert.alert(
+        'Error',
+        'La cantidad del gasto no puede ser menor o igual a cero',
+        [{text: 'OK'}],
+      );
+    }
+
+    const newExpense: Expense = {
+      id: Date.now().toString(),
+      name: expense.name,
+      category: expense.category,
+      quantity: parseFloat(expense.quantity.toString()),
+    };
+
+    handleNewExpense(newExpense);
+
+    setExpense({
+      id: '',
+      name: '',
+      category: '0001',
+      quantity: 0,
+    });
+
+    closeModal();
+  };
+
   return (
     <Modal animationType="slide" visible={showModal}>
       <SafeAreaView style={styles.container}>
@@ -70,7 +142,7 @@ export function ExpenseForm({showModal, closeModal}: Props): React.JSX.Element {
         </View>
 
         <View style={styles.add_button}>
-          <Pressable onPress={() => {}}>
+          <Pressable onPress={addNewExpense}>
             <Text style={styles.add_button_text}>Agregar nuevo gasto</Text>
           </Pressable>
         </View>

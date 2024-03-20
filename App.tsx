@@ -1,10 +1,18 @@
 import React, {useState} from 'react';
-import {Image, Pressable, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  Image,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   Header,
   NewBudget,
   BudgetControl,
   ExpenseForm,
+  ExpenseCard,
 } from './src/presentation/components';
 import {Expense} from './src/domain/entities';
 
@@ -15,6 +23,10 @@ function App(): React.JSX.Element {
 
   const handleNewBudget = (value: number) => {
     setBudget(value);
+  };
+
+  const handleNewExpense = (expense: Expense) => {
+    setExpenses(state => [...state, expense]);
   };
 
   return (
@@ -44,10 +56,21 @@ function App(): React.JSX.Element {
         <ExpenseForm
           showModal={expenseForm}
           closeModal={() => setExpenseForm(state => !state)}
+          handleNewExpense={handleNewExpense}
         />
       )}
 
-      <View style={styles.body}></View>
+      <View style={styles.body}>
+        {expenses.length > 0 ? (
+          expenses.map(expense => (
+            <ExpenseCard expense={expense} key={expense.id} />
+          ))
+        ) : (
+          <View>
+            <Text>Todavía no tienes gastos</Text>
+          </View>
+        )}
+      </View>
     </SafeAreaView>
   );
 }

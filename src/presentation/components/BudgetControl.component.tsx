@@ -18,7 +18,9 @@ export function BudgetControl({budget, expenses}: Props): React.JSX.Element {
       (total, item) => total + item.quantity,
       0,
     );
+    console.log({totalSpent});
     const totalAvailable = budget - totalSpent;
+    console.log({totalAvailable});
 
     setSpent(totalSpent);
     setAvailable(totalAvailable);
