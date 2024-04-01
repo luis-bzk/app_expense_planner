@@ -3,8 +3,8 @@ import {
   Image,
   Pressable,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {
@@ -12,9 +12,9 @@ import {
   NewBudget,
   BudgetControl,
   ExpenseForm,
-  ExpenseCard,
 } from './src/presentation/components';
 import {Expense} from './src/domain/entities';
+import {ExpensesList} from './src/presentation/components/ExpensesList.component';
 
 function App(): React.JSX.Element {
   const [budget, setBudget] = useState<number>();
@@ -31,15 +31,19 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Header />
+      <ScrollView>
+        <View style={styles.header}>
+          <Header />
 
-        {budget && budget > 0 ? (
-          <BudgetControl budget={budget} expenses={expenses} />
-        ) : (
-          <NewBudget handleNewBudget={handleNewBudget} />
-        )}
-      </View>
+          {budget && budget > 0 ? (
+            <BudgetControl budget={budget} expenses={expenses} />
+          ) : (
+            <NewBudget handleNewBudget={handleNewBudget} />
+          )}
+        </View>
+
+        {budget && budget > 0 && <ExpensesList expenses={expenses} />}
+      </ScrollView>
 
       {budget && budget > 0 && (
         <Pressable
@@ -59,18 +63,6 @@ function App(): React.JSX.Element {
           handleNewExpense={handleNewExpense}
         />
       )}
-
-      <View style={styles.body}>
-        {expenses.length > 0 ? (
-          expenses.map(expense => (
-            <ExpenseCard expense={expense} key={expense.id} />
-          ))
-        ) : (
-          <View>
-            <Text>Todavía no tienes gastos</Text>
-          </View>
-        )}
-      </View>
     </SafeAreaView>
   );
 }
@@ -83,6 +75,7 @@ const styles = StyleSheet.create({
     // paddingVertical: 10,
   },
   new_budget_button: {
+    zIndex: 10,
     width: 50,
     height: 50,
     position: 'absolute',
@@ -93,7 +86,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  body: {paddingHorizontal: 14, paddingTop: 30, paddingBottom: 10},
 });
 
 export default App;

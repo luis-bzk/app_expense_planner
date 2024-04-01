@@ -5,3 +5,4 @@ export * from './BudgetControl.component';
 export * from './ExpenseForm.component';
 export * from './InputPicker.component';
 export * from './ExpenseCard.component';
+export * from './ExpensesList.component';
