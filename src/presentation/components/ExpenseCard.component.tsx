@@ -3,6 +3,7 @@ import {Image, ImageSourcePropType, StyleSheet, Text, View} from 'react-native';
 import {Expense} from '../../domain/entities';
 import {getCategory} from '../../config/infraestructure/category';
 import {formatBudgetCurrency} from '../../config/helpers/formatBudget';
+import {formatDate} from '../../config/helpers';
 
 interface Props {
   expense: Expense;
@@ -28,11 +29,19 @@ export function ExpenseCard({expense}: Props): React.JSX.Element {
 
   return (
     <View style={styles.card}>
-      <Image source={iconsDictionary[category.id]} style={styles.image} />
-      <View style={styles.info}>
-        <Text>{category.label}</Text>
-        <Text>{expense.name}</Text>
-        <Text>{formatBudgetCurrency(expense.quantity)}</Text>
+      <View style={styles.left_data}>
+        <Image source={iconsDictionary[category.id]} style={styles.image} />
+        <View style={styles.info}>
+          <Text style={styles.name}>{expense.name}</Text>
+          <Text style={styles.date}>{formatDate(expense.date)}</Text>
+          <Text style={styles.category}>{category.label}</Text>
+        </View>
+      </View>
+
+      <View>
+        <Text style={styles.price_quantity}>
+          {formatBudgetCurrency(expense.quantity)}
+        </Text>
       </View>
     </View>
   );
@@ -45,10 +54,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     flexDirection: 'row',
-    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
+  left_data: {flexDirection: 'row', alignItems: 'center', gap: 20},
   image: {width: 60, height: 60},
   info: {
     flexDirection: 'column',
+    gap: 3,
   },
+  name: {
+    fontSize: 17,
+    color: '#334155',
+    fontWeight: '500',
+    textTransform: 'capitalize',
+  },
+  date: {color: '#475569', fontSize: 13, fontWeight: '500'},
+  category: {color: '#64748b', textTransform: 'uppercase', fontSize: 13},
+  price_quantity: {fontWeight: '700', fontSize: 18, color: '#16a34a'},
 });

@@ -11,7 +11,6 @@ export function Header(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#3b82f6',
     paddingTop: 20,
   },
   header_text: {

@@ -29,6 +29,7 @@ export function ExpenseForm({
     name: '',
     category: '0001',
     quantity: 0,
+    date: new Date(),
   });
 
   const setValueExpense = (field: keyof Expense, value: string) => {
@@ -89,6 +90,7 @@ export function ExpenseForm({
       name: expense.name,
       category: expense.category,
       quantity: parseFloat(expense.quantity.toString()),
+      date: new Date(),
     };
 
     handleNewExpense(newExpense);
@@ -98,6 +100,7 @@ export function ExpenseForm({
       name: '',
       category: '0001',
       quantity: 0,
+      date: new Date(),
     });
 
     closeModal();

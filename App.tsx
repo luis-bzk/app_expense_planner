@@ -68,11 +68,13 @@ function App(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  container: {backgroundColor: '#e8e8e8', flex: 1},
+  container: {backgroundColor: '#eef2ff', flex: 1},
   header: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#818cf8',
     paddingHorizontal: 14,
-    // paddingVertical: 10,
+    gap: 10,
+    paddingVertical: 10,
+    marginBottom: 40,
   },
   new_budget_button: {
     zIndex: 10,
