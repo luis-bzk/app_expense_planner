@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  Alert,
 } from 'react-native';
 import {
   Header,
@@ -20,13 +21,49 @@ function App(): React.JSX.Element {
   const [budget, setBudget] = useState<number>();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [expenseForm, setExpenseForm] = useState<boolean>(false);
+  const [expense, setExpense] = useState<Expense>({
+    id: '',
+    name: '',
+    category: '0001',
+    quantity: 0,
+    date: new Date(),
+  });
 
   const handleNewBudget = (value: number) => {
     setBudget(value);
   };
 
   const handleNewExpense = (expense: Expense) => {
+    const exists_expense = expenses.find(exp => exp.id === expense.id);
+    if (exists_expense) {
+      const updatedExpenses = expenses.map(exp => {
+        return exp.id !== expense.id ? exp : expense;
+      });
+      return setExpenses(updatedExpenses);
+    }
+
     setExpenses(state => [...state, expense]);
+  };
+
+  const setExpenseToEdit = (id: string) => {
+    const exists = expenses.find(exp => exp.id === id);
+
+    if (!exists) {
+      return Alert.alert('Error', 'El gasto seleccionado no existe');
+    }
+    setExpense(exists);
+    setExpenseForm(true);
+  };
+
+  const closeFormModal = () => {
+    setExpenseForm(state => !state);
+    setExpense({
+      id: '',
+      name: '',
+      category: '0001',
+      quantity: 0,
+      date: new Date(),
+    });
   };
 
   return (
@@ -42,7 +79,12 @@ function App(): React.JSX.Element {
           )}
         </View>
 
-        {budget && budget > 0 && <ExpensesList expenses={expenses} />}
+        {budget && budget > 0 && (
+          <ExpensesList
+            expenses={expenses}
+            setExpenseToEdit={setExpenseToEdit}
+          />
+        )}
       </ScrollView>
 
       {budget && budget > 0 && (
@@ -59,8 +101,9 @@ function App(): React.JSX.Element {
       {expenseForm && (
         <ExpenseForm
           showModal={expenseForm}
-          closeModal={() => setExpenseForm(state => !state)}
+          closeModal={closeFormModal}
           handleNewExpense={handleNewExpense}
+          current_expense={expense}
         />
       )}
     </SafeAreaView>

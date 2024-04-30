@@ -5,9 +5,13 @@ import {ExpenseCard} from './ExpenseCard.component';
 
 interface Props {
   expenses: Expense[];
+  setExpenseToEdit: (id: string) => void;
 }
 
-export function ExpensesList({expenses}: Props): React.JSX.Element {
+export function ExpensesList({
+  expenses,
+  setExpenseToEdit,
+}: Props): React.JSX.Element {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Gastos</Text>
@@ -15,7 +19,11 @@ export function ExpensesList({expenses}: Props): React.JSX.Element {
       {expenses.length > 0 ? (
         <View style={styles.list}>
           {expenses.map(expense => (
-            <ExpenseCard expense={expense} key={expense.id} />
+            <ExpenseCard
+              expense={expense}
+              key={expense.id}
+              setExpenseToEdit={setExpenseToEdit}
+            />
           ))}
         </View>
       ) : (

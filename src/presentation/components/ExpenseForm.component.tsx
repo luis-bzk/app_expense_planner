@@ -17,20 +17,16 @@ interface Props {
   showModal: boolean;
   closeModal: () => void;
   handleNewExpense: (expense: Expense) => void;
+  current_expense: Expense;
 }
 
 export function ExpenseForm({
   showModal,
   closeModal,
   handleNewExpense,
+  current_expense,
 }: Props): React.JSX.Element {
-  const [expense, setExpense] = useState<Expense>({
-    id: '',
-    name: '',
-    category: '0001',
-    quantity: 0,
-    date: new Date(),
-  });
+  const [expense, setExpense] = useState<Expense>(current_expense);
 
   const setValueExpense = (field: keyof Expense, value: string) => {
     setExpense(prevState => ({
@@ -85,23 +81,19 @@ export function ExpenseForm({
       );
     }
 
-    const newExpense: Expense = {
-      id: Date.now().toString(),
-      name: expense.name,
-      category: expense.category,
-      quantity: parseFloat(expense.quantity.toString()),
-      date: new Date(),
-    };
-
-    handleNewExpense(newExpense);
-
-    setExpense({
-      id: '',
-      name: '',
-      category: '0001',
-      quantity: 0,
-      date: new Date(),
-    });
+    if (current_expense.id) {
+      handleNewExpense({
+        ...expense,
+        quantity: parseFloat(expense.quantity.toString()),
+      });
+    } else {
+      handleNewExpense({
+        ...expense,
+        id: Date.now().toString(),
+        quantity: parseFloat(expense.quantity.toString()),
+        date: new Date(),
+      });
+    }
 
     closeModal();
   };
@@ -146,7 +138,9 @@ export function ExpenseForm({
 
         <View style={styles.add_button}>
           <Pressable onPress={addNewExpense}>
-            <Text style={styles.add_button_text}>Agregar nuevo gasto</Text>
+            <Text style={styles.add_button_text}>
+              {expense.id ? 'Actualizar gasto' : 'Agregar nuevo gasto'}
+            </Text>
           </Pressable>
         </View>
       </SafeAreaView>

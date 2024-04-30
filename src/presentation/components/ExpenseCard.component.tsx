@@ -1,5 +1,12 @@
-import React from 'react';
-import {Image, ImageSourcePropType, StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
+import {
+  Image,
+  ImageSourcePropType,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {Expense} from '../../domain/entities';
 import {getCategory} from '../../config/infraestructure/category';
 import {formatBudgetCurrency} from '../../config/helpers/formatBudget';
@@ -7,6 +14,7 @@ import {formatDate} from '../../config/helpers';
 
 interface Props {
   expense: Expense;
+  setExpenseToEdit: (id: string) => void;
 }
 
 interface IconsDictionary {
@@ -24,26 +32,38 @@ const iconsDictionary: IconsDictionary = {
   '0009': require('../img/icono_gastos.png'),
 };
 
-export function ExpenseCard({expense}: Props): React.JSX.Element {
+export function ExpenseCard({
+  expense,
+  setExpenseToEdit,
+}: Props): React.JSX.Element {
+  const [isLongPressing, setIsLongPressing] = useState(false);
+
   const category = getCategory(expense.category);
 
   return (
-    <View style={styles.card}>
-      <View style={styles.left_data}>
-        <Image source={iconsDictionary[category.id]} style={styles.image} />
-        <View style={styles.info}>
-          <Text style={styles.name}>{expense.name}</Text>
-          <Text style={styles.date}>{formatDate(expense.date)}</Text>
-          <Text style={styles.category}>{category.label}</Text>
+    <Pressable
+      onLongPress={() => {
+        setIsLongPressing(true);
+        setExpenseToEdit(expense.id);
+      }}
+      onPressOut={() => setIsLongPressing(false)}>
+      <View style={[styles.card, isLongPressing && styles.longPressCard]}>
+        <View style={styles.left_data}>
+          <Image source={iconsDictionary[category.id]} style={styles.image} />
+          <View style={styles.info}>
+            <Text style={styles.name}>{expense.name}</Text>
+            <Text style={styles.date}>{formatDate(expense.date)}</Text>
+            <Text style={styles.category}>{category.label}</Text>
+          </View>
+        </View>
+
+        <View>
+          <Text style={styles.price_quantity}>
+            {formatBudgetCurrency(expense.quantity)}
+          </Text>
         </View>
       </View>
-
-      <View>
-        <Text style={styles.price_quantity}>
-          {formatBudgetCurrency(expense.quantity)}
-        </Text>
-      </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -56,6 +76,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  longPressCard: {
+    backgroundColor: '#e0e0e0', // Cambia el color de fondo en el long press
   },
   left_data: {flexDirection: 'row', alignItems: 'center', gap: 20},
   image: {width: 60, height: 60},
