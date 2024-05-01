@@ -45,6 +45,14 @@ function App(): React.JSX.Element {
     setExpenses(state => [...state, expense]);
   };
 
+  const handleDeleteExpense = (id: string) => {
+    const updatedExpenses = expenses.filter(exp => exp.id !== id);
+    if (!updatedExpenses) {
+      setExpenses([]);
+    }
+    setExpenses(updatedExpenses);
+  };
+
   const setExpenseToEdit = (id: string) => {
     const exists = expenses.find(exp => exp.id === id);
 
@@ -104,6 +112,7 @@ function App(): React.JSX.Element {
           closeModal={closeFormModal}
           handleNewExpense={handleNewExpense}
           current_expense={expense}
+          handleDeleteExpense={handleDeleteExpense}
         />
       )}
     </SafeAreaView>
