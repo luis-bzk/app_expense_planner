@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 
-import {Image, StyleSheet, Text, View} from 'react-native';
-import {formatBudgetCurrency} from '../../config/helpers';
 import {Expense} from '../../domain/entities';
+import {formatBudgetCurrency} from '../../config/helpers';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import {Circle} from 'react-native-svg';
 
 interface Props {
   budget: number;
@@ -12,24 +14,37 @@ interface Props {
 export function BudgetControl({budget, expenses}: Props): React.JSX.Element {
   const [available, setAvailable] = useState<number>(0);
   const [spent, setSpent] = useState<number>(0);
+  const [spentPercentage, setSpentPercentage] = useState<number>(0);
 
   useEffect(() => {
     const totalSpent = expenses.reduce(
       (total, item) => total + item.quantity,
       0,
     );
-    console.log({totalSpent});
     const totalAvailable = budget - totalSpent;
-    console.log({totalAvailable});
+    const spentPercentage = parseFloat(
+      ((totalSpent * 100) / totalAvailable).toFixed(2),
+    );
 
     setSpent(totalSpent);
+    setSpentPercentage(spentPercentage);
     setAvailable(totalAvailable);
   }, [budget, expenses]);
 
   return (
     <View style={styles.container}>
       <View style={styles.graphic}>
-        <Image style={styles.img} source={require('../img/grafico.jpg')} />
+        <AnimatedCircularProgress
+          size={180}
+          width={15}
+          fill={spentPercentage}
+          tintColor="#6366f1"
+          // onAnimationComplete={() => console.log('onAnimationComplete')}
+          backgroundColor="#e5e7eb"
+          children={() => (
+            <Text style={styles.percentageDetail}>{spentPercentage}%</Text>
+          )}
+        />
       </View>
 
       <View style={styles.details_container}>
@@ -89,6 +104,11 @@ const styles = StyleSheet.create({
   },
   detail: {
     fontSize: 18,
+  },
+  percentageDetail: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#64748b',
   },
   detail_value: {
     color: '#2563eb',
